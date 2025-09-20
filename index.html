@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌻 Flores para mi novia 🌻</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to bottom, #87CEEB, #fff8dc, #ffe066);
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+      padding: 10px;
+    }
+    
+    #canvas {
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      animation: flotar 4s ease-in-out infinite alternate;
+      max-width: 90vw;
+      max-height: 60vh;
+      width: auto;
+      height: auto;
+    }
+    
+    @keyframes flotar {
+      from { transform: translateY(-10px) rotate(1deg); }
+      to { transform: translateY(10px) rotate(-1deg); }
+    }
+    
+    .mensaje {
+      margin-top: 20px;
+      text-align: center;
+      font-size: clamp(16px, 4vw, 22px);
+      font-weight: bold;
+      color: #4e342e;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px 25px;
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      animation: aparecer 3s ease-in-out forwards;
+      max-width: 90vw;
+    }
+    
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(30px) scale(0.8); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    /* Responsive para móviles */
+    @media (max-width: 768px) {
+      body {
+        padding: 5px;
+      }
+      
+      #canvas {
+        max-width: 95vw;
+        max-height: 50vh;
+      }
+      
+      .mensaje {
+        font-size: 18px;
+        padding: 12px 20px;
+        margin-top: 15px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .mensaje {
+        font-size: 16px;
+        padding: 10px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="600" height="400"></canvas>
+  <div class="mensaje">
+    🌻Con cariño mi chica Nathaly🌻
+    <br>
+    Que estas flores amarillas alegren tu día 💛
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Función para hacer el canvas responsive
+    function ajustarCanvas() {
+      const maxWidth = Math.min(window.innerWidth * 0.9, 800);
+      const maxHeight = Math.min(window.innerHeight * 0.6, 500);
+      
+      canvas.width = maxWidth;
+      canvas.height = maxHeight;
+      canvas.style.width = maxWidth + 'px';
+      canvas.style.height = maxHeight + 'px';
+    }
+    
+    // Función para dibujar un pétalo
+    function dibujarPetalo(x, y, angulo, largo, ancho) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angulo);
+      
+      // Crear gradiente para el pétalo
+      const gradiente = ctx.createLinearGradient(0, -largo/2, 0, largo/2);
+      gradiente.addColorStop(0, '#ffeb3b');
+      gradiente.addColorStop(0.5, '#ffc107');
+      gradiente.addColorStop(1, '#ff8f00');
+      
+      ctx.fillStyle = gradiente;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, ancho, largo, 0, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Sombra del pétalo
+      ctx.shadowColor = 'rgba(255, 193, 7, 0.3)';
+      ctx.shadowBlur = 5;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      ctx.restore();
+    }
+    
+    // Función para dibujar el tallo de la flor
+    function dibujarTallo(x, y, altura, grosor, curvatura = 0) {
+      ctx.save();
+      
+      // Gradiente para el tallo
+      const gradienteTallo = ctx.createLinearGradient(x - grosor/2, y, x + grosor/2, y + altura);
+      gradienteTallo.addColorStop(0, '#4caf50');
+      gradienteTallo.addColorStop(0.3, '#66bb6a');
+      gradienteTallo.addColorStop(0.7, '#388e3c');
+      gradienteTallo.addColorStop(1, '#2e7d32');
+      
+      ctx.fillStyle = gradienteTallo;
+      ctx.strokeStyle = '#2e7d32';
+      ctx.lineWidth = 1;
+      
+      // Dibujar tallo curvado
+      ctx.beginPath();
+      ctx.moveTo(x - grosor/2, y);
+      
+      // Curva del lado izquierdo
+      ctx.quadraticCurveTo(
+        x - grosor/2 + curvatura, y + altura/2,
+        x - grosor/2 + curvatura/2, y + altura
+      );
+      
+      // Base del tallo
+      ctx.lineTo(x + grosor/2 + curvatura/2, y + altura);
+      
+      // Curva del lado derecho
+      ctx.quadraticCurveTo(
+        x + grosor/2 + curvatura, y + altura/2,
+        x + grosor/2, y
+      );
+      
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      
+      // Agregar algunas hojas pequeñas
+      dibujarHoja(x + curvatura/3, y + altura * 0.3, 8, 15, 0.3);
+      dibujarHoja(x + curvatura/2, y + altura * 0.7, 6, 12, -0.5);
+      
+      ctx.restore();
+    }
+    
+    // Función para dibujar una hoja
+    function dibujarHoja(x, y, ancho, largo, angulo) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angulo);
+      
+      // Gradiente para la hoja
+      const gradienteHoja = ctx.createLinearGradient(-ancho/2, -largo/2, ancho/2, largo/2);
+      gradienteHoja.addColorStop(0, '#4caf50');
+      gradienteHoja.addColorStop(0.5, '#66bb6a');
+      gradienteHoja.addColorStop(1, '#388e3c');
+      
+      ctx.fillStyle = gradienteHoja;
+      ctx.strokeStyle = '#2e7d32';
+      ctx.lineWidth = 1;
+      
+      // Forma de la hoja
+      ctx.beginPath();
+      ctx.ellipse(0, 0, ancho, largo, 0, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+      
+      // Vena central de la hoja
+      ctx.strokeStyle = '#2e7d32';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, -largo);
+      ctx.lineTo(0, largo);
+      ctx.stroke();
+      
+      ctx.restore();
+    }
+    
+    // Función para dibujar el centro del girasol
+    function dibujarCentro(x, y, radio) {
+      // Centro principal
+      const gradienteCentro = ctx.createRadialGradient(x-5, y-5, 0, x, y, radio);
+      gradienteCentro.addColorStop(0, '#8d6e63');
+      gradienteCentro.addColorStop(0.3, '#5d4037');
+      gradienteCentro.addColorStop(0.7, '#3e2723');
+      gradienteCentro.addColorStop(1, '#2e1a16');
+      
+      ctx.fillStyle = gradienteCentro;
+      ctx.beginPath();
+      ctx.arc(x, y, radio, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Textura del centro (semillas)
+      ctx.fillStyle = '#2e1a16';
+      for(let i = 0; i < 50; i++) {
+        const anguloSemilla = (i / 50) * 2 * Math.PI;
+        const radioSemilla = Math.random() * (radio - 5) + 3;
+        const xSemilla = x + Math.cos(anguloSemilla) * radioSemilla;
+        const ySemilla = y + Math.sin(anguloSemilla) * radioSemilla;
+        
+        ctx.beginPath();
+        ctx.arc(xSemilla, ySemilla, Math.random() * 2 + 1, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+    }
+    
+    // Función para dibujar un girasol completo con tallo
+    function dibujarGirasol(x, y, tamaño, rotacion = 0, alturaTallo = 80) {
+      const numPetalos = 16;
+      const largoPetalo = tamaño * 0.8;
+      const anchoPetalo = tamaño * 0.2;
+      const radioCentro = tamaño * 0.3;
+      const grosorTallo = tamaño * 0.15;
+      const curvaturaTallo = Math.sin(rotacion * 5) * 10;
+      
+      // Primero dibujar el tallo (detrás de la flor)
+      dibujarTallo(x, y, alturaTallo, grosorTallo, curvaturaTallo);
+      
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotacion);
+      
+      // Dibujar pétalos
+      for(let i = 0; i < numPetalos; i++) {
+        const angulo = (i / numPetalos) * 2 * Math.PI;
+        const xPetalo = Math.cos(angulo) * (radioCentro + largoPetalo * 0.3);
+        const yPetalo = Math.sin(angulo) * (radioCentro + largoPetalo * 0.3);
+        dibujarPetalo(xPetalo, yPetalo, angulo, largoPetalo, anchoPetalo);
+      }
+      
+      ctx.restore();
+      
+      // Dibujar centro (sin rotación para mantener las semillas estables)
+      dibujarCentro(x, y, radioCentro);
+    }
+    
+    // Función para dibujar el fondo con nubes
+    function dibujarFondo() {
+      // Limpiar canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Fondo degradado
+      const fondoGradiente = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      fondoGradiente.addColorStop(0, '#87CEEB');
+      fondoGradiente.addColorStop(0.5, '#fff8dc');
+      fondoGradiente.addColorStop(1, '#ffe066');
+      
+      ctx.fillStyle = fondoGradiente;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Dibujar algunas nubes simples (ajustadas al tamaño del canvas)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.beginPath();
+      ctx.arc(canvas.width * 0.15, canvas.height * 0.2, 25, 0, 2 * Math.PI);
+      ctx.arc(canvas.width * 0.22, canvas.height * 0.18, 35, 0, 2 * Math.PI);
+      ctx.arc(canvas.width * 0.27, canvas.height * 0.2, 25, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.arc(canvas.width * 0.75, canvas.height * 0.15, 20, 0, 2 * Math.PI);
+      ctx.arc(canvas.width * 0.78, canvas.height * 0.14, 30, 0, 2 * Math.PI);
+      ctx.arc(canvas.width * 0.83, canvas.height * 0.15, 20, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Agregar césped en la base
+      ctx.fillStyle = '#4caf50';
+      for(let i = 0; i < 100; i++) {
+        const x = Math.random() * canvas.width;
+        const y = canvas.height - Math.random() * 40 - 10;
+        const altura = Math.random() * 15 + 5;
+        
+        ctx.beginPath();
+        ctx.moveTo(x, canvas.height);
+        ctx.quadraticCurveTo(x + Math.random() * 4 - 2, y, x + Math.random() * 6 - 3, y - altura);
+        ctx.lineWidth = Math.random() * 2 + 1;
+        ctx.strokeStyle = `rgba(76, 175, 80, ${Math.random() * 0.6 + 0.4})`;
+        ctx.stroke();
+      }
+    }
+    
+    // Función para calcular posiciones responsive
+    function calcularPosicionesGirasoles() {
+      const escala = Math.min(canvas.width / 600, canvas.height / 400);
+      return [
+        {x: canvas.width * 0.2, y: canvas.height * 0.25, tamaño: 45 * escala, velocidadRotacion: 0.002, alturaTallo: 120 * escala},
+        {x: canvas.width * 0.5, y: canvas.height * 0.2, tamaño: 55 * escala, velocidadRotacion: -0.001, alturaTallo: 140 * escala},
+        {x: canvas.width * 0.8, y: canvas.height * 0.28, tamaño: 40 * escala, velocidadRotacion: 0.003, alturaTallo: 100 * escala},
+        {x: canvas.width * 0.13, y: canvas.height * 0.5, tamaño: 50 * escala, velocidadRotacion: -0.002, alturaTallo: 130 * escala},
+        {x: canvas.width * 0.42, y: canvas.height * 0.45, tamaño: 60 * escala, velocidadRotacion: 0.001, alturaTallo: 150 * escala},
+        {x: canvas.width * 0.75, y: canvas.height * 0.55, tamaño: 45 * escala, velocidadRotacion: -0.003, alturaTallo: 110 * escala}
+      ];
+    }
+    
+    let tiempo = 0;
+    
+    // Función de animación principal
+    function animar() {
+      tiempo += 0.016;
+      
+      dibujarFondo();
+      
+      const girasoles = calcularPosicionesGirasoles();
+      
+      // Dibujar cada girasol con rotación suave y tallo
+      girasoles.forEach(girasol => {
+        const rotacion = tiempo * girasol.velocidadRotacion;
+        dibujarGirasol(girasol.x, girasol.y, girasol.tamaño, rotacion, girasol.alturaTallo);
+      });
+      
+      requestAnimationFrame(animar);
+    }
+    
+    // Configurar canvas responsive
+    ajustarCanvas();
+    
+    // Ajustar canvas cuando cambie el tamaño de ventana
+    window.addEventListener('resize', () => {
+      ajustarCanvas();
+    });
+    
+    // Iniciar la animación
+    animar();
+  </script>
+</body>
+</html>
